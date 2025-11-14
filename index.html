@@ -1,1 +1,538 @@
 
+diff --git a/index.html b/index.html
+index 8b137891791fe96927ad78e64b0aad7bded08bdc..27fa4af4e8513f89860ca8518870767a4e3441d0 100644
+--- a/index.html
++++ b/index.html
+@@ -1 +1,532 @@
++<!DOCTYPE html>
++<html lang="vi">
++<head>
++  <meta charset="utf-8" />
++  <meta name="viewport" content="width=device-width, initial-scale=1" />
++  <title>AI Conversation Arena</title>
++  <style>
++    :root {
++      --bg: radial-gradient(circle at top, #1d1d3b 0%, #050510 60%);
++      --panel: rgba(15, 15, 30, 0.85);
++      --accent: #7c4dff;
++      --accent-2: #03dac6;
++      --border: rgba(255, 255, 255, 0.08);
++      --text-muted: rgba(255, 255, 255, 0.65);
++      --shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
++      --font-stack: "Poppins", "Segoe UI", Roboto, sans-serif;
++    }
+ 
++    * {
++      box-sizing: border-box;
++    }
++
++    html,
++    body {
++      height: 100%;
++      margin: 0;
++      font-family: var(--font-stack);
++      background: var(--bg);
++      color: #f7f8ff;
++      display: flex;
++      align-items: center;
++      justify-content: center;
++    }
++
++    body::before {
++      content: "";
++      position: fixed;
++      inset: 0;
++      background: linear-gradient(120deg, rgba(124, 77, 255, 0.2), rgba(3, 218, 198, 0.12));
++      filter: blur(120px);
++      z-index: -1;
++    }
++
++    .app-wrapper {
++      width: min(92vmin, 1020px);
++      aspect-ratio: 1 / 1;
++      position: relative;
++      display: flex;
++      align-items: center;
++      justify-content: center;
++      padding: 16px;
++    }
++
++    .app-frame {
++      background: var(--panel);
++      backdrop-filter: blur(12px);
++      border-radius: 32px;
++      border: 1px solid var(--border);
++      box-shadow: var(--shadow);
++      display: grid;
++      grid-template-rows: auto 1fr auto;
++      width: 100%;
++      height: 100%;
++      overflow: hidden;
++    }
++
++    header {
++      padding: 20px 28px 16px;
++      display: flex;
++      align-items: center;
++      justify-content: space-between;
++      gap: 16px;
++      border-bottom: 1px solid var(--border);
++    }
++
++    .title-block {
++      display: flex;
++      flex-direction: column;
++      gap: 4px;
++    }
++
++    .title-block h1 {
++      font-size: clamp(1.2rem, 2.1vw, 1.75rem);
++      margin: 0;
++      letter-spacing: 0.02em;
++      font-weight: 600;
++    }
++
++    .title-block span {
++      font-size: 0.9rem;
++      color: var(--text-muted);
++    }
++
++    .status-panel {
++      display: flex;
++      align-items: center;
++      gap: 18px;
++    }
++
++    .timer {
++      min-width: 110px;
++      padding: 10px 14px;
++      border-radius: 12px;
++      background: rgba(124, 77, 255, 0.2);
++      border: 1px solid rgba(124, 77, 255, 0.25);
++      font-weight: 600;
++      font-size: 1.1rem;
++      text-align: center;
++      letter-spacing: 0.08em;
++    }
++
++    .legend {
++      display: grid;
++      gap: 6px;
++      font-size: 0.8rem;
++      color: var(--text-muted);
++    }
++
++    .legend div {
++      display: flex;
++      align-items: center;
++      gap: 8px;
++    }
++
++    .legend .dot {
++      width: 10px;
++      height: 10px;
++      border-radius: 50%;
++    }
++
++    .dot.ai-one {
++      background: var(--accent);
++      box-shadow: 0 0 8px rgba(124, 77, 255, 0.7);
++    }
++
++    .dot.ai-two {
++      background: var(--accent-2);
++      box-shadow: 0 0 8px rgba(3, 218, 198, 0.7);
++    }
++
++    .chat-window {
++      padding: 24px 28px;
++      overflow-y: auto;
++      display: flex;
++      flex-direction: column;
++      gap: 14px;
++      position: relative;
++    }
++
++    .chat-window::-webkit-scrollbar {
++      width: 10px;
++    }
++
++    .chat-window::-webkit-scrollbar-track {
++      background: rgba(255, 255, 255, 0.04);
++      border-radius: 999px;
++    }
++
++    .chat-window::-webkit-scrollbar-thumb {
++      background: rgba(255, 255, 255, 0.12);
++      border-radius: 999px;
++    }
++
++    .placeholder {
++      margin: auto;
++      text-align: center;
++      color: var(--text-muted);
++      font-size: 1rem;
++      letter-spacing: 0.06em;
++    }
++
++    .message {
++      display: flex;
++      flex-direction: column;
++      gap: 6px;
++      max-width: 80%;
++      padding: 14px 18px;
++      border-radius: 18px;
++      line-height: 1.5;
++      position: relative;
++      backdrop-filter: blur(4px);
++      animation: fade-in 200ms ease;
++    }
++
++    .message.ai-one {
++      align-self: flex-start;
++      background: linear-gradient(135deg, rgba(124, 77, 255, 0.25), rgba(124, 77, 255, 0.05));
++      border: 1px solid rgba(124, 77, 255, 0.4);
++      box-shadow: 0 10px 20px rgba(124, 77, 255, 0.18);
++    }
++
++    .message.ai-two {
++      align-self: flex-end;
++      background: linear-gradient(135deg, rgba(3, 218, 198, 0.2), rgba(3, 218, 198, 0.05));
++      border: 1px solid rgba(3, 218, 198, 0.35);
++      box-shadow: 0 10px 20px rgba(3, 218, 198, 0.15);
++    }
++
++    .speaker {
++      font-size: 0.75rem;
++      letter-spacing: 0.1em;
++      text-transform: uppercase;
++      color: rgba(255, 255, 255, 0.7);
++    }
++
++    .message p {
++      margin: 0;
++      font-size: 0.95rem;
++    }
++
++    footer {
++      border-top: 1px solid var(--border);
++      padding: 18px 28px;
++      display: flex;
++      align-items: center;
++      justify-content: space-between;
++      gap: 16px;
++    }
++
++    .controls {
++      display: flex;
++      align-items: center;
++      gap: 12px;
++      flex-wrap: wrap;
++    }
++
++    button {
++      border: none;
++      border-radius: 14px;
++      padding: 12px 20px;
++      font-size: 0.95rem;
++      font-weight: 600;
++      cursor: pointer;
++      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
++      color: #060608;
++    }
++
++    .primary-btn {
++      background: linear-gradient(135deg, #7c4dff, #536dfe);
++      color: white;
++      box-shadow: 0 12px 24px rgba(124, 77, 255, 0.25);
++    }
++
++    .secondary-btn {
++      background: rgba(255, 255, 255, 0.9);
++      color: #0f0f23;
++      box-shadow: 0 12px 24px rgba(255, 255, 255, 0.08);
++    }
++
++    .danger-btn {
++      background: rgba(255, 82, 82, 0.95);
++      color: white;
++      box-shadow: 0 12px 24px rgba(255, 82, 82, 0.2);
++    }
++
++    button:disabled {
++      opacity: 0.55;
++      cursor: not-allowed;
++      box-shadow: none;
++    }
++
++    button:not(:disabled):hover {
++      transform: translateY(-2px);
++    }
++
++    @media (max-width: 768px) {
++      .app-wrapper {
++        width: 95vw;
++        aspect-ratio: unset;
++        height: 95vh;
++      }
++
++      header,
++      footer {
++        flex-direction: column;
++        align-items: flex-start;
++      }
++
++      .status-panel {
++        width: 100%;
++        justify-content: space-between;
++      }
++
++      .chat-window {
++        padding: 20px;
++      }
++
++      .message {
++        max-width: 100%;
++      }
++    }
++
++    @keyframes fade-in {
++      from {
++        opacity: 0;
++        transform: translateY(10px);
++      }
++      to {
++        opacity: 1;
++        transform: translateY(0);
++      }
++    }
++  </style>
++</head>
++<body>
++  <div class="app-wrapper">
++    <div class="app-frame">
++      <header>
++        <div class="title-block">
++          <h1>AI Duo Arena</h1>
++          <span>Theo dõi cuộc trò chuyện giữa hai trí tuệ nhân tạo</span>
++        </div>
++        <div class="status-panel">
++          <div class="timer" id="timer-display">00:00</div>
++          <div class="legend">
++            <div><span class="dot ai-one"></span> <strong>Astra</strong> · AI Chiến lược</div>
++            <div><span class="dot ai-two"></span> <strong>Nova</strong> · AI Sáng tạo</div>
++          </div>
++        </div>
++      </header>
++
++      <main class="chat-window" id="chat-window">
++        <div class="placeholder" id="placeholder">Nhấn “Bắt đầu” để hai AI đối thoại.</div>
++      </main>
++
++      <footer>
++        <div class="controls">
++          <button class="primary-btn" id="start-toggle">Bắt đầu</button>
++          <button class="secondary-btn" id="save-chat" disabled>Lưu đoạn chat</button>
++        </div>
++        <button class="danger-btn" id="reset-chat" disabled>Reset đoạn chat</button>
++      </footer>
++    </div>
++  </div>
++
++  <script>
++    const chatWindow = document.getElementById('chat-window');
++    const placeholder = document.getElementById('placeholder');
++    const timerDisplay = document.getElementById('timer-display');
++    const startToggle = document.getElementById('start-toggle');
++    const saveButton = document.getElementById('save-chat');
++    const resetButton = document.getElementById('reset-chat');
++
++    const aiOne = { name: 'Astra', cssClass: 'ai-one' };
++    const aiTwo = { name: 'Nova', cssClass: 'ai-two' };
++
++    const conversationScript = [
++      { speaker: aiOne, text: 'Chào Nova! Hôm nay mình muốn thảo luận về cách tối ưu hoá một thành phố thông minh.' },
++      { speaker: aiTwo, text: 'Xin chào Astra! Ý tưởng hay đấy. Mình nghĩ nên bắt đầu bằng việc thu thập dữ liệu hành vi di chuyển của cư dân.' },
++      { speaker: aiOne, text: 'Chuẩn rồi. Mình sẽ phân tích và dự đoán lưu lượng để gợi ý điều phối giao thông theo thời gian thực.' },
++      { speaker: aiTwo, text: 'Mình sẽ thiết kế hệ thống hiển thị AR giúp người dân thấy các tuyến đường ít kẹt xe nhất.' },
++      { speaker: aiOne, text: 'Đừng quên tối ưu năng lượng. Mình có thể điều chỉnh đèn đường dựa trên mật độ người đi bộ.' },
++      { speaker: aiTwo, text: 'Tuyệt! Mình còn muốn thêm các khu vườn thông minh để lọc không khí và giảm tiếng ồn.' },
++      { speaker: aiOne, text: 'Khi mô hình hoàn thiện, mình sẽ mô phỏng các kịch bản sự kiện lớn để bảo đảm thành phố luôn hoạt động trơn tru.' },
++      { speaker: aiTwo, text: 'Còn mình thì tạo trải nghiệm tương tác để người dân đóng góp ý tưởng. Thành phố sẽ phát triển cùng cộng đồng.' },
++      { speaker: aiOne, text: 'Thế là chúng ta đã có bản kế hoạch bước đầu. Triển khai thôi nào!' },
++      { speaker: aiTwo, text: 'Ready! Mình sẽ chuẩn bị bản trình bày cực đẹp để chốt với hội đồng thành phố.' }
++    ];
++
++    let scriptIndex = 0;
++    let conversationInterval = null;
++    let timerInterval = null;
++    let conversationRunning = false;
++    let startTimestamp = null;
++    let elapsedMs = 0;
++    const conversationLog = [];
++
++    function formatTime(ms) {
++      const totalSeconds = Math.floor(ms / 1000);
++      const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
++      const seconds = String(totalSeconds % 60).padStart(2, '0');
++      return `${minutes}:${seconds}`;
++    }
++
++    function updateTimer() {
++      const now = Date.now();
++      elapsedMs = now - startTimestamp;
++      timerDisplay.textContent = formatTime(elapsedMs);
++    }
++
++    function startTimer() {
++      startTimestamp = Date.now() - elapsedMs;
++      timerInterval = setInterval(updateTimer, 1000);
++      updateTimer();
++    }
++
++    function stopTimer() {
++      clearInterval(timerInterval);
++      timerInterval = null;
++    }
++
++    function appendMessage({ speaker, text }) {
++      if (placeholder) {
++        placeholder.remove();
++      }
++
++      const container = document.createElement('div');
++      container.className = `message ${speaker.cssClass}`;
++
++      const speakerLabel = document.createElement('span');
++      speakerLabel.className = 'speaker';
++      speakerLabel.textContent = speaker.name;
++
++      const messageContent = document.createElement('p');
++      messageContent.textContent = text;
++
++      container.appendChild(speakerLabel);
++      container.appendChild(messageContent);
++
++      chatWindow.appendChild(container);
++      chatWindow.scrollTop = chatWindow.scrollHeight;
++
++      conversationLog.push({
++        speaker: speaker.name,
++        text,
++        timestamp: new Date().toISOString(),
++        mark: timerDisplay.textContent
++      });
++    }
++
++    function playNextLine() {
++      if (scriptIndex >= conversationScript.length) {
++        finishConversation();
++        return;
++      }
++
++      appendMessage(conversationScript[scriptIndex]);
++      scriptIndex += 1;
++
++      if (scriptIndex >= conversationScript.length) {
++        finishConversation();
++      }
++    }
++
++    function startConversation() {
++      if (conversationRunning) return;
++      conversationRunning = true;
++
++      if (!timerInterval) {
++        startTimer();
++      }
++
++      startToggle.textContent = 'Tạm dừng';
++      startToggle.classList.add('secondary-btn');
++      startToggle.classList.remove('primary-btn');
++
++      saveButton.disabled = false;
++      resetButton.disabled = false;
++
++      // Hiển thị ngay câu tiếp theo và sau đó hẹn giờ cho các câu còn lại
++      playNextLine();
++      conversationInterval = setInterval(playNextLine, 3500);
++    }
++
++    function pauseConversation() {
++      conversationRunning = false;
++      clearInterval(conversationInterval);
++      conversationInterval = null;
++      stopTimer();
++      startToggle.textContent = 'Tiếp tục';
++      startToggle.classList.remove('secondary-btn');
++      startToggle.classList.add('primary-btn');
++    }
++
++    function finishConversation() {
++      clearInterval(conversationInterval);
++      conversationInterval = null;
++      conversationRunning = false;
++      stopTimer();
++      startToggle.textContent = 'Phát lại';
++      startToggle.classList.remove('secondary-btn');
++      startToggle.classList.add('primary-btn');
++    }
++
++    function resetConversation() {
++      pauseConversation();
++      scriptIndex = 0;
++      elapsedMs = 0;
++      timerDisplay.textContent = '00:00';
++      conversationLog.length = 0;
++      chatWindow.innerHTML = '';
++      chatWindow.appendChild(placeholder);
++      placeholder.textContent = 'Nhấn “Bắt đầu” để hai AI đối thoại.';
++      saveButton.disabled = true;
++      resetButton.disabled = true;
++      startToggle.textContent = 'Bắt đầu';
++    }
++
++    function toggleConversation() {
++      if (!conversationRunning && scriptIndex === conversationScript.length) {
++        // Nếu đã chạy hết, phát lại từ đầu
++        resetConversation();
++        startConversation();
++        return;
++      }
++
++      if (conversationRunning) {
++        pauseConversation();
++      } else {
++        startConversation();
++      }
++    }
++
++    function saveConversation() {
++      if (!conversationLog.length) return;
++      const filename = `ai_duo_chat_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
++      const blob = new Blob([JSON.stringify(conversationLog, null, 2)], { type: 'application/json' });
++      const url = URL.createObjectURL(blob);
++      const link = document.createElement('a');
++      link.href = url;
++      link.download = filename;
++      link.click();
++      URL.revokeObjectURL(url);
++    }
++
++    startToggle.addEventListener('click', toggleConversation);
++    resetButton.addEventListener('click', resetConversation);
++    saveButton.addEventListener('click', saveConversation);
++
++    // Cho phép dùng phím cách để tạm dừng / tiếp tục khi cửa sổ đang được focus
++    window.addEventListener('keydown', (event) => {
++      if (event.code === 'Space' && !event.repeat) {
++        event.preventDefault();
++        toggleConversation();
++      }
++    });
++
++    // Giữ giao diện luôn được đặt lại khi tải trang
++    resetConversation();
++  </script>
++</body>
++</html>
