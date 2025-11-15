@@ -1,538 +1,1520 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Conversation</title>
+    <style>
+      :root {
+        --font-stack: "Poppins", "Segoe UI", Roboto, sans-serif;
+      }
 
-diff --git a/index.html b/index.html
-index 8b137891791fe96927ad78e64b0aad7bded08bdc..27fa4af4e8513f89860ca8518870767a4e3441d0 100644
---- a/index.html
-+++ b/index.html
-@@ -1 +1,532 @@
-+<!DOCTYPE html>
-+<html lang="vi">
-+<head>
-+  <meta charset="utf-8" />
-+  <meta name="viewport" content="width=device-width, initial-scale=1" />
-+  <title>AI Conversation Arena</title>
-+  <style>
-+    :root {
-+      --bg: radial-gradient(circle at top, #1d1d3b 0%, #050510 60%);
-+      --panel: rgba(15, 15, 30, 0.85);
-+      --accent: #7c4dff;
-+      --accent-2: #03dac6;
-+      --border: rgba(255, 255, 255, 0.08);
-+      --text-muted: rgba(255, 255, 255, 0.65);
-+      --shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
-+      --font-stack: "Poppins", "Segoe UI", Roboto, sans-serif;
-+    }
- 
-+    * {
-+      box-sizing: border-box;
-+    }
-+
-+    html,
-+    body {
-+      height: 100%;
-+      margin: 0;
-+      font-family: var(--font-stack);
-+      background: var(--bg);
-+      color: #f7f8ff;
-+      display: flex;
-+      align-items: center;
-+      justify-content: center;
-+    }
-+
-+    body::before {
-+      content: "";
-+      position: fixed;
-+      inset: 0;
-+      background: linear-gradient(120deg, rgba(124, 77, 255, 0.2), rgba(3, 218, 198, 0.12));
-+      filter: blur(120px);
-+      z-index: -1;
-+    }
-+
-+    .app-wrapper {
-+      width: min(92vmin, 1020px);
-+      aspect-ratio: 1 / 1;
-+      position: relative;
-+      display: flex;
-+      align-items: center;
-+      justify-content: center;
-+      padding: 16px;
-+    }
-+
-+    .app-frame {
-+      background: var(--panel);
-+      backdrop-filter: blur(12px);
-+      border-radius: 32px;
-+      border: 1px solid var(--border);
-+      box-shadow: var(--shadow);
-+      display: grid;
-+      grid-template-rows: auto 1fr auto;
-+      width: 100%;
-+      height: 100%;
-+      overflow: hidden;
-+    }
-+
-+    header {
-+      padding: 20px 28px 16px;
-+      display: flex;
-+      align-items: center;
-+      justify-content: space-between;
-+      gap: 16px;
-+      border-bottom: 1px solid var(--border);
-+    }
-+
-+    .title-block {
-+      display: flex;
-+      flex-direction: column;
-+      gap: 4px;
-+    }
-+
-+    .title-block h1 {
-+      font-size: clamp(1.2rem, 2.1vw, 1.75rem);
-+      margin: 0;
-+      letter-spacing: 0.02em;
-+      font-weight: 600;
-+    }
-+
-+    .title-block span {
-+      font-size: 0.9rem;
-+      color: var(--text-muted);
-+    }
-+
-+    .status-panel {
-+      display: flex;
-+      align-items: center;
-+      gap: 18px;
-+    }
-+
-+    .timer {
-+      min-width: 110px;
-+      padding: 10px 14px;
-+      border-radius: 12px;
-+      background: rgba(124, 77, 255, 0.2);
-+      border: 1px solid rgba(124, 77, 255, 0.25);
-+      font-weight: 600;
-+      font-size: 1.1rem;
-+      text-align: center;
-+      letter-spacing: 0.08em;
-+    }
-+
-+    .legend {
-+      display: grid;
-+      gap: 6px;
-+      font-size: 0.8rem;
-+      color: var(--text-muted);
-+    }
-+
-+    .legend div {
-+      display: flex;
-+      align-items: center;
-+      gap: 8px;
-+    }
-+
-+    .legend .dot {
-+      width: 10px;
-+      height: 10px;
-+      border-radius: 50%;
-+    }
-+
-+    .dot.ai-one {
-+      background: var(--accent);
-+      box-shadow: 0 0 8px rgba(124, 77, 255, 0.7);
-+    }
-+
-+    .dot.ai-two {
-+      background: var(--accent-2);
-+      box-shadow: 0 0 8px rgba(3, 218, 198, 0.7);
-+    }
-+
-+    .chat-window {
-+      padding: 24px 28px;
-+      overflow-y: auto;
-+      display: flex;
-+      flex-direction: column;
-+      gap: 14px;
-+      position: relative;
-+    }
-+
-+    .chat-window::-webkit-scrollbar {
-+      width: 10px;
-+    }
-+
-+    .chat-window::-webkit-scrollbar-track {
-+      background: rgba(255, 255, 255, 0.04);
-+      border-radius: 999px;
-+    }
-+
-+    .chat-window::-webkit-scrollbar-thumb {
-+      background: rgba(255, 255, 255, 0.12);
-+      border-radius: 999px;
-+    }
-+
-+    .placeholder {
-+      margin: auto;
-+      text-align: center;
-+      color: var(--text-muted);
-+      font-size: 1rem;
-+      letter-spacing: 0.06em;
-+    }
-+
-+    .message {
-+      display: flex;
-+      flex-direction: column;
-+      gap: 6px;
-+      max-width: 80%;
-+      padding: 14px 18px;
-+      border-radius: 18px;
-+      line-height: 1.5;
-+      position: relative;
-+      backdrop-filter: blur(4px);
-+      animation: fade-in 200ms ease;
-+    }
-+
-+    .message.ai-one {
-+      align-self: flex-start;
-+      background: linear-gradient(135deg, rgba(124, 77, 255, 0.25), rgba(124, 77, 255, 0.05));
-+      border: 1px solid rgba(124, 77, 255, 0.4);
-+      box-shadow: 0 10px 20px rgba(124, 77, 255, 0.18);
-+    }
-+
-+    .message.ai-two {
-+      align-self: flex-end;
-+      background: linear-gradient(135deg, rgba(3, 218, 198, 0.2), rgba(3, 218, 198, 0.05));
-+      border: 1px solid rgba(3, 218, 198, 0.35);
-+      box-shadow: 0 10px 20px rgba(3, 218, 198, 0.15);
-+    }
-+
-+    .speaker {
-+      font-size: 0.75rem;
-+      letter-spacing: 0.1em;
-+      text-transform: uppercase;
-+      color: rgba(255, 255, 255, 0.7);
-+    }
-+
-+    .message p {
-+      margin: 0;
-+      font-size: 0.95rem;
-+    }
-+
-+    footer {
-+      border-top: 1px solid var(--border);
-+      padding: 18px 28px;
-+      display: flex;
-+      align-items: center;
-+      justify-content: space-between;
-+      gap: 16px;
-+    }
-+
-+    .controls {
-+      display: flex;
-+      align-items: center;
-+      gap: 12px;
-+      flex-wrap: wrap;
-+    }
-+
-+    button {
-+      border: none;
-+      border-radius: 14px;
-+      padding: 12px 20px;
-+      font-size: 0.95rem;
-+      font-weight: 600;
-+      cursor: pointer;
-+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-+      color: #060608;
-+    }
-+
-+    .primary-btn {
-+      background: linear-gradient(135deg, #7c4dff, #536dfe);
-+      color: white;
-+      box-shadow: 0 12px 24px rgba(124, 77, 255, 0.25);
-+    }
-+
-+    .secondary-btn {
-+      background: rgba(255, 255, 255, 0.9);
-+      color: #0f0f23;
-+      box-shadow: 0 12px 24px rgba(255, 255, 255, 0.08);
-+    }
-+
-+    .danger-btn {
-+      background: rgba(255, 82, 82, 0.95);
-+      color: white;
-+      box-shadow: 0 12px 24px rgba(255, 82, 82, 0.2);
-+    }
-+
-+    button:disabled {
-+      opacity: 0.55;
-+      cursor: not-allowed;
-+      box-shadow: none;
-+    }
-+
-+    button:not(:disabled):hover {
-+      transform: translateY(-2px);
-+    }
-+
-+    @media (max-width: 768px) {
-+      .app-wrapper {
-+        width: 95vw;
-+        aspect-ratio: unset;
-+        height: 95vh;
-+      }
-+
-+      header,
-+      footer {
-+        flex-direction: column;
-+        align-items: flex-start;
-+      }
-+
-+      .status-panel {
-+        width: 100%;
-+        justify-content: space-between;
-+      }
-+
-+      .chat-window {
-+        padding: 20px;
-+      }
-+
-+      .message {
-+        max-width: 100%;
-+      }
-+    }
-+
-+    @keyframes fade-in {
-+      from {
-+        opacity: 0;
-+        transform: translateY(10px);
-+      }
-+      to {
-+        opacity: 1;
-+        transform: translateY(0);
-+      }
-+    }
-+  </style>
-+</head>
-+<body>
-+  <div class="app-wrapper">
-+    <div class="app-frame">
-+      <header>
-+        <div class="title-block">
-+          <h1>AI Duo Arena</h1>
-+          <span>Theo dõi cuộc trò chuyện giữa hai trí tuệ nhân tạo</span>
-+        </div>
-+        <div class="status-panel">
-+          <div class="timer" id="timer-display">00:00</div>
-+          <div class="legend">
-+            <div><span class="dot ai-one"></span> <strong>Astra</strong> · AI Chiến lược</div>
-+            <div><span class="dot ai-two"></span> <strong>Nova</strong> · AI Sáng tạo</div>
-+          </div>
-+        </div>
-+      </header>
-+
-+      <main class="chat-window" id="chat-window">
-+        <div class="placeholder" id="placeholder">Nhấn “Bắt đầu” để hai AI đối thoại.</div>
-+      </main>
-+
-+      <footer>
-+        <div class="controls">
-+          <button class="primary-btn" id="start-toggle">Bắt đầu</button>
-+          <button class="secondary-btn" id="save-chat" disabled>Lưu đoạn chat</button>
-+        </div>
-+        <button class="danger-btn" id="reset-chat" disabled>Reset đoạn chat</button>
-+      </footer>
-+    </div>
-+  </div>
-+
-+  <script>
-+    const chatWindow = document.getElementById('chat-window');
-+    const placeholder = document.getElementById('placeholder');
-+    const timerDisplay = document.getElementById('timer-display');
-+    const startToggle = document.getElementById('start-toggle');
-+    const saveButton = document.getElementById('save-chat');
-+    const resetButton = document.getElementById('reset-chat');
-+
-+    const aiOne = { name: 'Astra', cssClass: 'ai-one' };
-+    const aiTwo = { name: 'Nova', cssClass: 'ai-two' };
-+
-+    const conversationScript = [
-+      { speaker: aiOne, text: 'Chào Nova! Hôm nay mình muốn thảo luận về cách tối ưu hoá một thành phố thông minh.' },
-+      { speaker: aiTwo, text: 'Xin chào Astra! Ý tưởng hay đấy. Mình nghĩ nên bắt đầu bằng việc thu thập dữ liệu hành vi di chuyển của cư dân.' },
-+      { speaker: aiOne, text: 'Chuẩn rồi. Mình sẽ phân tích và dự đoán lưu lượng để gợi ý điều phối giao thông theo thời gian thực.' },
-+      { speaker: aiTwo, text: 'Mình sẽ thiết kế hệ thống hiển thị AR giúp người dân thấy các tuyến đường ít kẹt xe nhất.' },
-+      { speaker: aiOne, text: 'Đừng quên tối ưu năng lượng. Mình có thể điều chỉnh đèn đường dựa trên mật độ người đi bộ.' },
-+      { speaker: aiTwo, text: 'Tuyệt! Mình còn muốn thêm các khu vườn thông minh để lọc không khí và giảm tiếng ồn.' },
-+      { speaker: aiOne, text: 'Khi mô hình hoàn thiện, mình sẽ mô phỏng các kịch bản sự kiện lớn để bảo đảm thành phố luôn hoạt động trơn tru.' },
-+      { speaker: aiTwo, text: 'Còn mình thì tạo trải nghiệm tương tác để người dân đóng góp ý tưởng. Thành phố sẽ phát triển cùng cộng đồng.' },
-+      { speaker: aiOne, text: 'Thế là chúng ta đã có bản kế hoạch bước đầu. Triển khai thôi nào!' },
-+      { speaker: aiTwo, text: 'Ready! Mình sẽ chuẩn bị bản trình bày cực đẹp để chốt với hội đồng thành phố.' }
-+    ];
-+
-+    let scriptIndex = 0;
-+    let conversationInterval = null;
-+    let timerInterval = null;
-+    let conversationRunning = false;
-+    let startTimestamp = null;
-+    let elapsedMs = 0;
-+    const conversationLog = [];
-+
-+    function formatTime(ms) {
-+      const totalSeconds = Math.floor(ms / 1000);
-+      const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
-+      const seconds = String(totalSeconds % 60).padStart(2, '0');
-+      return `${minutes}:${seconds}`;
-+    }
-+
-+    function updateTimer() {
-+      const now = Date.now();
-+      elapsedMs = now - startTimestamp;
-+      timerDisplay.textContent = formatTime(elapsedMs);
-+    }
-+
-+    function startTimer() {
-+      startTimestamp = Date.now() - elapsedMs;
-+      timerInterval = setInterval(updateTimer, 1000);
-+      updateTimer();
-+    }
-+
-+    function stopTimer() {
-+      clearInterval(timerInterval);
-+      timerInterval = null;
-+    }
-+
-+    function appendMessage({ speaker, text }) {
-+      if (placeholder) {
-+        placeholder.remove();
-+      }
-+
-+      const container = document.createElement('div');
-+      container.className = `message ${speaker.cssClass}`;
-+
-+      const speakerLabel = document.createElement('span');
-+      speakerLabel.className = 'speaker';
-+      speakerLabel.textContent = speaker.name;
-+
-+      const messageContent = document.createElement('p');
-+      messageContent.textContent = text;
-+
-+      container.appendChild(speakerLabel);
-+      container.appendChild(messageContent);
-+
-+      chatWindow.appendChild(container);
-+      chatWindow.scrollTop = chatWindow.scrollHeight;
-+
-+      conversationLog.push({
-+        speaker: speaker.name,
-+        text,
-+        timestamp: new Date().toISOString(),
-+        mark: timerDisplay.textContent
-+      });
-+    }
-+
-+    function playNextLine() {
-+      if (scriptIndex >= conversationScript.length) {
-+        finishConversation();
-+        return;
-+      }
-+
-+      appendMessage(conversationScript[scriptIndex]);
-+      scriptIndex += 1;
-+
-+      if (scriptIndex >= conversationScript.length) {
-+        finishConversation();
-+      }
-+    }
-+
-+    function startConversation() {
-+      if (conversationRunning) return;
-+      conversationRunning = true;
-+
-+      if (!timerInterval) {
-+        startTimer();
-+      }
-+
-+      startToggle.textContent = 'Tạm dừng';
-+      startToggle.classList.add('secondary-btn');
-+      startToggle.classList.remove('primary-btn');
-+
-+      saveButton.disabled = false;
-+      resetButton.disabled = false;
-+
-+      // Hiển thị ngay câu tiếp theo và sau đó hẹn giờ cho các câu còn lại
-+      playNextLine();
-+      conversationInterval = setInterval(playNextLine, 3500);
-+    }
-+
-+    function pauseConversation() {
-+      conversationRunning = false;
-+      clearInterval(conversationInterval);
-+      conversationInterval = null;
-+      stopTimer();
-+      startToggle.textContent = 'Tiếp tục';
-+      startToggle.classList.remove('secondary-btn');
-+      startToggle.classList.add('primary-btn');
-+    }
-+
-+    function finishConversation() {
-+      clearInterval(conversationInterval);
-+      conversationInterval = null;
-+      conversationRunning = false;
-+      stopTimer();
-+      startToggle.textContent = 'Phát lại';
-+      startToggle.classList.remove('secondary-btn');
-+      startToggle.classList.add('primary-btn');
-+    }
-+
-+    function resetConversation() {
-+      pauseConversation();
-+      scriptIndex = 0;
-+      elapsedMs = 0;
-+      timerDisplay.textContent = '00:00';
-+      conversationLog.length = 0;
-+      chatWindow.innerHTML = '';
-+      chatWindow.appendChild(placeholder);
-+      placeholder.textContent = 'Nhấn “Bắt đầu” để hai AI đối thoại.';
-+      saveButton.disabled = true;
-+      resetButton.disabled = true;
-+      startToggle.textContent = 'Bắt đầu';
-+    }
-+
-+    function toggleConversation() {
-+      if (!conversationRunning && scriptIndex === conversationScript.length) {
-+        // Nếu đã chạy hết, phát lại từ đầu
-+        resetConversation();
-+        startConversation();
-+        return;
-+      }
-+
-+      if (conversationRunning) {
-+        pauseConversation();
-+      } else {
-+        startConversation();
-+      }
-+    }
-+
-+    function saveConversation() {
-+      if (!conversationLog.length) return;
-+      const filename = `ai_duo_chat_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
-+      const blob = new Blob([JSON.stringify(conversationLog, null, 2)], { type: 'application/json' });
-+      const url = URL.createObjectURL(blob);
-+      const link = document.createElement('a');
-+      link.href = url;
-+      link.download = filename;
-+      link.click();
-+      URL.revokeObjectURL(url);
-+    }
-+
-+    startToggle.addEventListener('click', toggleConversation);
-+    resetButton.addEventListener('click', resetConversation);
-+    saveButton.addEventListener('click', saveConversation);
-+
-+    // Cho phép dùng phím cách để tạm dừng / tiếp tục khi cửa sổ đang được focus
-+    window.addEventListener('keydown', (event) => {
-+      if (event.code === 'Space' && !event.repeat) {
-+        event.preventDefault();
-+        toggleConversation();
-+      }
-+    });
-+
-+    // Giữ giao diện luôn được đặt lại khi tải trang
-+    resetConversation();
-+  </script>
-+</body>
-+</html>
+      body[data-theme='dark'] {
+        --bg: radial-gradient(circle at top, #1d1d3b 0%, #050510 60%);
+        --panel: rgba(15, 15, 30, 0.86);
+        --accent: rgb(3, 218, 197);
+        --accent-2: rgb(124, 77, 255);
+        --border: rgba(255, 255, 255, 0.08);
+        --text: #f7f8ff;
+        --text-muted: rgba(255, 255, 255, 0.65);
+        --shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
+        --surface-contrast: rgba(255, 255, 255, 0.12);
+        --input-bg: rgba(10, 10, 24, 0.82);
+        --chip-bg: rgba(124, 77, 255, 0.18);
+        --chip-border: rgba(124, 77, 255, 0.3);
+        --timer-bg: rgba(124, 77, 255, 0.2);
+        --timer-border: rgba(124, 77, 255, 0.25);
+        --btn-secondary-bg: rgba(255, 255, 255, 0.9);
+        --btn-secondary-text: #0f0f23;
+        --system-bg: rgba(255, 193, 7, 0.12);
+        --system-border: rgba(255, 193, 7, 0.4);
+      }
+
+      body[data-theme='light'] {
+        --bg: radial-gradient(circle at top, #f6f7ff 0%, #e6ebff 65%, #cfd8ff 100%);
+        --panel: rgba(255, 255, 255, 0.86);
+        --accent: rgb(3, 218, 197);
+        --accent-2: rgb(124, 77, 255);
+        --border: rgba(45, 61, 92, 0.12);
+        --text: #1f2747;
+        --text-muted: rgba(31, 39, 71, 0.6);
+        --shadow: 0 24px 48px rgba(55, 64, 119, 0.18);
+        --surface-contrast: rgba(45, 61, 92, 0.18);
+        --input-bg: rgba(255, 255, 255, 0.92);
+        --chip-bg: rgba(92, 107, 192, 0.15);
+        --chip-border: rgba(92, 107, 192, 0.3);
+        --timer-bg: rgba(92, 107, 192, 0.16);
+        --timer-border: rgba(92, 107, 192, 0.28);
+        --btn-secondary-bg: rgba(31, 39, 71, 0.1);
+        --btn-secondary-text: #1f2747;
+        --system-bg: rgba(255, 193, 7, 0.14);
+        --system-border: rgba(255, 193, 7, 0.5);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: var(--font-stack);
+        background: var(--bg);
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(120deg, rgba(124, 77, 255, 0.2), rgba(3, 218, 198, 0.12));
+        filter: blur(120px);
+        z-index: -1;
+      }
+
+      body[data-theme='light']::before {
+        background: linear-gradient(120deg, rgba(92, 107, 192, 0.22), rgba(38, 166, 154, 0.18));
+      }
+
+      .app-wrapper {
+        width: min(96vw, 1380px);
+        height: min(94vh, 900px);
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .theme-toggle {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        border-radius: 999px;
+        padding: 10px 18px;
+        background: var(--btn-secondary-bg);
+        color: var(--btn-secondary-text);
+        border: 1px solid var(--surface-contrast);
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .theme-toggle:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.18);
+      }
+
+      .app-frame {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+        gap: 20px;
+      }
+
+      .tab {
+        background: var(--panel);
+        backdrop-filter: blur(12px);
+        border-radius: 32px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .tab-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        background: var(--chip-bg);
+        border: 1px solid var(--chip-border);
+      }
+
+      .chat-tab {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+      }
+
+      .chat-tab header {
+        padding: 24px 28px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .title-block {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .title-block h1 {
+        font-size: clamp(1.2rem, 2.2vw, 1.9rem);
+        margin: 0;
+        letter-spacing: 0.02em;
+        font-weight: 600;
+      }
+
+      .title-block span.description {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+      }
+
+      .status-panel {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .timer {
+        min-width: 110px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        background: var(--timer-bg);
+        border: 1px solid var(--timer-border);
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-align: center;
+        letter-spacing: 0.08em;
+      }
+
+      .conversation-count {
+        min-width: 110px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        background: var(--timer-bg);
+        border: 1px solid var(--timer-border);
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-align: center;
+        letter-spacing: 0.08em;
+      }
+
+      .legend {
+        display: grid;
+        gap: 6px;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      .legend div {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .legend .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      .dot.ai-one {
+        background: var(--accent);
+        box-shadow: 0 0 8px rgba(3, 218, 198, 0.7);
+      }
+
+      .dot.ai-two {
+        background: var(--accent-2);
+        box-shadow: 0 0 8px rgba(124, 77, 255, 0.7);
+      }
+
+      .chat-window {
+        padding: 24px 28px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        position: relative;
+      }
+
+      .chat-window::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      .chat-window::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 999px;
+      }
+
+      .chat-window::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+      }
+
+      .placeholder {
+        margin: auto;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 1rem;
+        letter-spacing: 0.06em;
+      }
+
+      .message {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        max-width: 80%;
+        padding: 14px 18px;
+        border-radius: 18px;
+        line-height: 1.5;
+        position: relative;
+        backdrop-filter: blur(4px);
+        animation: fade-in 200ms ease;
+      }
+
+      .message.ai-one {
+        align-self: flex-start;
+        background: linear-gradient(135deg, rgba(124, 77, 255, 0.25), rgba(124, 77, 255, 0.05));
+        border: 1px solid rgba(3, 218, 198, 0.7);
+        box-shadow: 0 10px 20px rgba(124, 77, 255, 0.18);
+      }
+
+      .message.ai-two {
+        align-self: flex-end;
+        background: linear-gradient(135deg, rgba(3, 218, 198, 0.2), rgba(3, 218, 198, 0.05));
+        border: 1px solid rgba(124, 77, 255, 0.7);
+        box-shadow: 0 10px 20px rgba(3, 218, 198, 0.15);
+      }
+
+      .message.system {
+        align-self: center;
+        max-width: 90%;
+        background: var(--system-bg);
+        border: 1px solid var(--system-border);
+        color: #ffd54f;
+        font-size: 0.85rem;
+      }
+
+      .speaker {
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      .message p {
+        margin: 0;
+        font-size: 1.08rem;
+        white-space: pre-wrap;
+      }
+
+      .chat-tab footer {
+        border-top: 1px solid var(--border);
+        padding: 18px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .controls {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        border: none;
+        border-radius: 14px;
+        padding: 12px 20px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        color: var(--btn-secondary-text, #060608);
+      }
+
+      .primary-btn {
+        background: linear-gradient(135deg, #7c4dff, #536dfe);
+        color: white;
+        box-shadow: 0 12px 24px rgba(124, 77, 255, 0.25);
+      }
+
+      .secondary-btn {
+        background: var(--btn-secondary-bg);
+        color: var(--btn-secondary-text);
+        box-shadow: 0 12px 24px rgba(255, 255, 255, 0.08);
+      }
+
+      .danger-btn {
+        background: rgba(255, 82, 82, 0.95);
+        color: white;
+        box-shadow: 0 12px 24px rgba(255, 82, 82, 0.2);
+      }
+
+      button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      button:not(:disabled):hover {
+        transform: translateY(-2px);
+      }
+
+      .control-tab {
+        padding: 26px 28px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .control-header {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 14px;
+      }
+
+      .control-header h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        letter-spacing: 0.04em;
+      }
+
+      .control-header p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+
+      .control-scroll {
+        flex: 1;
+        margin-top: 18px;
+        overflow-y: auto;
+        padding-right: 6px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .control-scroll::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .control-scroll::-webkit-scrollbar-thumb {
+        background: var(--surface-contrast);
+        border-radius: 999px;
+      }
+
+      .section-label {
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      .config-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .persona-grid,
+      .tuning-row {
+        display: contents;
+      }
+
+      .field-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .field-group label {
+        font-size: 0.8rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      .field-group input,
+      .field-group textarea,
+      .field-group select {
+        width: 100%;
+        border-radius: 16px;
+        border: 1px solid var(--surface-contrast);
+        background: var(--input-bg);
+        color: var(--text);
+        padding: 14px 16px;
+        font: inherit;
+        resize: vertical;
+        min-height: 52px;
+      }
+
+      .field-group textarea {
+        min-height: 96px;
+      }
+
+      .field-group select {
+        min-height: 52px;
+      }
+
+      .field-group input:disabled,
+      .field-group textarea:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+
+      .field-group.range-group {
+        position: relative;
+        min-width: 220px;
+      }
+
+      .range-value {
+        position: absolute;
+        right: 0;
+        top: -18px;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      input[type='range'] {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 4px;
+        border-radius: 999px;
+        background: var(--surface-contrast);
+      }
+
+      input[type='range']::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--text);
+        cursor: pointer;
+      }
+
+      @media (max-width: 1180px) {
+        .app-frame {
+          grid-template-columns: 1fr;
+          grid-template-rows: auto auto;
+        }
+
+        .chat-tab {
+          min-height: 480px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .app-wrapper {
+          width: 95vw;
+          height: auto;
+          padding: 12px;
+        }
+
+        .chat-tab header,
+        .chat-tab footer {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .status-panel {
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .message {
+          max-width: 100%;
+        }
+
+        .config-panel {
+          gap: 16px;
+        }
+      }
+
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body data-theme="dark">
+    <div class="app-wrapper">
+      <button class="theme-toggle" id="theme-toggle">Switch to Light</button>
+      <div class="app-frame">
+        <section class="tab chat-tab">
+          <header>
+            <div class="title-block">
+              <span class="tab-chip">Chat Log</span>
+              <h1>Artificial Simulation</h1>
+              <span class="description">Follow the dialogue between two artificial minds</span>
+            </div>
+            <div class="status-panel">
+              <div class="timer" id="timer-display">00:00</div>
+              <div class="conversation-count" id="conversation-count">0 turns</div>
+              <div class="legend">
+                <div><span class="dot ai-one"></span> <strong>Romeo</strong> · The poet</div>
+                <div><span class="dot ai-two"></span> <strong>Juliet</strong> · The dreamer</div>
+              </div>
+            </div>
+          </header>
+          <main class="chat-window" id="chat-window">
+            <div class="placeholder" id="placeholder">Press “Start” after entering your API key to let the AIs talk.</div>
+          </main>
+          <footer>
+            <div class="controls">
+              <button class="primary-btn" id="start-toggle">Start</button>
+              <button class="secondary-btn" id="load-chat">Load chat</button>
+              <button class="secondary-btn" id="save-chat" disabled>Save chat</button>
+            </div>
+            <button class="danger-btn" id="reset-chat" disabled>Reset chat</button>
+          </footer>
+        </section>
+        <aside class="tab control-tab">
+          <div class="control-header">
+            <span class="tab-chip">Control Center</span>
+            <h2>AI Control Hub</h2>
+            <p>Configure Gemini access, tune personas, and steer the conversation.</p>
+          </div>
+          <div class="control-scroll">
+            <div class="config-panel">
+              <div class="field-group">
+                <label for="api-key-input">Gemini API key</label>
+                <input id="api-key-input" type="password" placeholder="Paste your API key" autocomplete="off" />
+              </div>
+              <div class="field-group">
+                <label for="model-select">Model</label>
+                <select id="model-select">
+                  <option value="gemini-2.0-flash" selected>Gemini 2.0 Flash</option>
+                  <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label for="topic-input">Shared topic</label>
+                <textarea id="topic-input" rows="2">Designing a hopeful future for star-crossed lovers.</textarea>
+              </div>
+              <div class="field-group">
+                <label for="ai-one-persona">Romeo's persona</label>
+                <textarea id="ai-one-persona" rows="3">A passionate wordsmith who speaks in bold romantic metaphors yet respects Juliet's independence.</textarea>
+              </div>
+              <div class="field-group">
+                <label for="ai-two-persona">Juliet's persona</label>
+                <textarea id="ai-two-persona" rows="3">A visionary dreamer balancing courage and grace, eager to carve a joyous destiny together.</textarea>
+              </div>
+              <div class="field-group range-group">
+                <label for="temperature-input">Temperature</label>
+                <span class="range-value" id="temperature-value">0.80</span>
+                <input id="temperature-input" type="range" min="0" max="2" step="0.05" value="1" />
+              </div>
+              <div class="field-group range-group">
+                <label for="max-tokens-input">Output token limit</label>
+                <span class="range-value" id="max-tokens-value">Unlimited</span>
+                <input id="max-tokens-input" type="range" min="0" max="4096" step="1" value="0" />
+              </div>
+              <div class="field-group">
+                <label for="turns-input">Exchange count</label>
+                <input id="turns-input" type="number" min="2" max="20" value="10" />
+              </div>
+              <div class="field-group">
+                <label for="stop-time-input">Stop after (minutes)</label>
+                <input id="stop-time-input" type="number" min="0" step="0.5" placeholder="Leave empty for no limit" />
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <input type="file" id="load-chat-input" accept=".json" hidden />
+
+    <script type="module">
+      import { GoogleGenAI } from 'https://esm.run/@google/genai';
+
+      const chatWindow = document.getElementById('chat-window');
+      const placeholder = document.getElementById('placeholder');
+      const timerDisplay = document.getElementById('timer-display');
+      const conversationCountDisplay = document.getElementById('conversation-count');
+      const startToggle = document.getElementById('start-toggle');
+      const loadButton = document.getElementById('load-chat');
+      const saveButton = document.getElementById('save-chat');
+      const resetButton = document.getElementById('reset-chat');
+      const themeToggle = document.getElementById('theme-toggle');
+
+      const apiKeyInput = document.getElementById('api-key-input');
+      const topicInput = document.getElementById('topic-input');
+      const aiOnePersonaInput = document.getElementById('ai-one-persona');
+      const aiTwoPersonaInput = document.getElementById('ai-two-persona');
+      const turnsInput = document.getElementById('turns-input');
+      const temperatureInput = document.getElementById('temperature-input');
+      const temperatureValue = document.getElementById('temperature-value');
+      const stopTimeInput = document.getElementById('stop-time-input');
+      const modelSelect = document.getElementById('model-select');
+      const maxTokensInput = document.getElementById('max-tokens-input');
+      const maxTokensValue = document.getElementById('max-tokens-value');
+      const loadChatInput = document.getElementById('load-chat-input');
+
+      const TURN_DELAY_MS = 2000;
+
+      const aiOne = { name: 'Romeo', cssClass: 'ai-one', persona: '' };
+      const aiTwo = { name: 'Juliet', cssClass: 'ai-two', persona: '' };
+
+      let aiClient = null;
+      let conversationLog = [];
+      let conversationRunning = false;
+      let turnsCompleted = 0;
+      let maxTurns = 0;
+      let currentSpeaker = aiOne;
+      let pendingTimeout = null;
+      let generating = false;
+      let sessionSettings = null;
+      let stopTriggered = false;
+      let finishedConversation = false;
+      let lastSessionSettings = null;
+
+      let timerInterval = null;
+      let startTimestamp = null;
+      let elapsedMs = 0;
+
+      function formatTime(ms) {
+        const totalSeconds = Math.floor(ms / 1000);
+        const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+        const seconds = String(totalSeconds % 60).padStart(2, '0');
+        return `${minutes}:${seconds}`;
+      }
+
+      function formatConversationCount(count) {
+        return `${count === 1 ? '1 turn' : `${count} turns`}`;
+      }
+
+      function updateConversationCount(count) {
+        if (!conversationCountDisplay) {
+          return;
+        }
+        const rawValue = typeof count === 'number' ? count : conversationLog.length;
+        let numericValue = typeof rawValue === 'number' ? rawValue : Number(rawValue);
+        if (!Number.isFinite(numericValue)) {
+          numericValue = 0;
+        }
+        const safeValue = Math.max(0, Math.floor(numericValue));
+        conversationCountDisplay.textContent = formatConversationCount(safeValue);
+      }
+
+      function escapeHtml(text) {
+        return text
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function formatRichText(text) {
+        if (typeof text !== 'string' || !text.length) {
+          return '';
+        }
+        const safeText = escapeHtml(text);
+        return safeText
+          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.+?)\*/g, '<em>$1</em>')
+          .replace(/\n/g, '<br>');
+      }
+
+      function updateTimer() {
+        const now = Date.now();
+        elapsedMs = now - startTimestamp;
+        timerDisplay.textContent = formatTime(elapsedMs);
+        if (!stopTriggered && sessionSettings?.stopAfterMs && elapsedMs >= sessionSettings.stopAfterMs) {
+          handleStopTimeReached();
+        }
+      }
+
+      function startTimer() {
+        startTimestamp = Date.now() - elapsedMs;
+        if (timerInterval) {
+          clearInterval(timerInterval);
+        }
+        timerInterval = setInterval(updateTimer, 1000);
+        updateTimer();
+      }
+
+      function stopTimer() {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+
+      function setConfigDisabled(disabled) {
+        [
+          apiKeyInput,
+          topicInput,
+          aiOnePersonaInput,
+          aiTwoPersonaInput,
+          turnsInput,
+          temperatureInput,
+          stopTimeInput,
+          modelSelect,
+          maxTokensInput,
+        ].forEach((field) => {
+          if (field) {
+            field.disabled = disabled;
+          }
+        });
+      }
+
+      function resetChatWindow() {
+        chatWindow.innerHTML = '';
+        if (placeholder) {
+          placeholder.textContent = 'Press “Start” after entering your API key to let the AIs talk.';
+          chatWindow.appendChild(placeholder);
+        }
+      }
+
+      function createMessageElement(speaker, initialText = '') {
+        if (placeholder && placeholder.parentElement === chatWindow) {
+          placeholder.remove();
+        }
+
+        const container = document.createElement('div');
+        container.className = `message ${speaker.cssClass}`;
+
+        const speakerLabel = document.createElement('span');
+        speakerLabel.className = 'speaker';
+        speakerLabel.textContent = speaker.name;
+
+        const messageContent = document.createElement('p');
+        messageContent.innerHTML = formatRichText(initialText);
+
+        container.appendChild(speakerLabel);
+        container.appendChild(messageContent);
+        chatWindow.appendChild(container);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        return { container, messageContent };
+      }
+
+      function appendSystemMessage(text) {
+        if (placeholder && placeholder.parentElement === chatWindow) {
+          placeholder.remove();
+        }
+
+        const container = document.createElement('div');
+        container.className = 'message system';
+        const messageContent = document.createElement('p');
+        messageContent.innerHTML = formatRichText(text);
+        container.appendChild(messageContent);
+        chatWindow.appendChild(container);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      }
+
+      function handleStopTimeReached() {
+        if (stopTriggered) {
+          return;
+        }
+        stopTriggered = true;
+        appendSystemMessage('The conversation stopped because it reached your time limit.');
+        finishConversation();
+      }
+
+      function renderMessageText(node, text) {
+        node.innerHTML = formatRichText(text);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      }
+
+      function renderConversationHistory(log) {
+        resetChatWindow();
+        if (!Array.isArray(log) || !log.length) {
+          updateConversationCount(0);
+          return;
+        }
+
+        for (const entry of log) {
+          if (!entry) {
+            continue;
+          }
+          const text = typeof entry.text === 'string' ? entry.text : '';
+          if (!text) {
+            continue;
+          }
+          const speakerName = typeof entry.speaker === 'string' ? entry.speaker : '';
+          if (speakerName === aiOne.name) {
+            createMessageElement(aiOne, text);
+          } else if (speakerName === aiTwo.name) {
+            createMessageElement(aiTwo, text);
+          } else {
+            appendSystemMessage(speakerName ? `${speakerName}: ${text}` : text);
+          }
+        }
+
+        updateConversationCount(log.length);
+        currentSpeaker = determineNextSpeaker();
+      }
+
+      function determineNextSpeaker() {
+        if (!conversationLog.length) {
+          return aiOne;
+        }
+        const lastSpeaker = conversationLog[conversationLog.length - 1];
+        const lastName = lastSpeaker?.speaker;
+        if (lastName === aiOne.name) {
+          return aiTwo;
+        }
+        if (lastName === aiTwo.name) {
+          return aiOne;
+        }
+        return aiOne;
+      }
+
+      function buildPrompt(speaker, counterpart) {
+        const { topic } = sessionSettings;
+        const transcript = conversationLog
+          .map((entry) => `${entry.speaker}: ${entry.text}`)
+          .join('\n');
+
+        let prompt = `You are ${speaker.name}, ${speaker.persona}. You are speaking with ${counterpart.name}, ${counterpart.persona}. Stay fully in character and keep building from the shared topic: ${topic}`;
+
+        if (!conversationLog.length) {
+          prompt += '\n\nOpen the conversation and introduce the topic.';
+        } else {
+          prompt += '\n\nConversation so far:';
+          prompt += `\n${transcript}`;
+          const lastMessage = conversationLog[conversationLog.length - 1] || { speaker: counterpart.name };
+          const speakerName = lastMessage.speaker || counterpart.name;
+          prompt += `\n\n${speakerName} just spoke above. Continue the duet reply that moves the story forward.`;
+        }
+
+        prompt += `\n\n${speaker.name}:`;
+        return prompt;
+      }
+
+      async function extractResponseText(result) {
+        if (!result) return '';
+        if (typeof result.text === 'function') {
+          try {
+            const value = await result.text();
+            if (typeof value === 'string') {
+              return value;
+            }
+          } catch (error) {
+            // fall through to other shapes
+          }
+        }
+        if (typeof result.text === 'string') {
+          return result.text;
+        }
+        const candidates = result.response?.candidates || result.candidates;
+        if (Array.isArray(candidates)) {
+          for (const candidate of candidates) {
+            const parts = candidate?.content?.parts || candidate?.parts;
+            if (Array.isArray(parts)) {
+              const textPart = parts.find((part) => typeof part.text === 'string');
+              if (textPart?.text) {
+                return textPart.text;
+              }
+            }
+            if (typeof candidate?.text === 'string') {
+              return candidate.text;
+            }
+          }
+        }
+        return '';
+      }
+
+      async function callGemini(promptText) {
+        if (!aiClient) {
+          throw new Error('Gemini API has not been configured.');
+        }
+
+        const { temperature, model, maxTokens } = sessionSettings;
+        const generationConfig = {
+          temperature,
+          topP: 0.95,
+          topK: 40,
+        };
+        if (typeof maxTokens === 'number' && maxTokens > 0) {
+          generationConfig.maxOutputTokens = maxTokens;
+        }
+
+        const result = await aiClient.models.generateContent({
+          model,
+          contents: promptText,
+          generationConfig,
+        });
+
+        const text = await extractResponseText(result);
+        if (!text || !text.trim()) {
+          throw new Error('The API response did not include usable text.');
+        }
+        return text.trim();
+      }
+
+      async function executeTurn() {
+        if (!conversationRunning || generating) {
+          return;
+        }
+
+        if (turnsCompleted >= maxTurns) {
+          finishConversation();
+          return;
+        }
+
+        generating = true;
+        const speaker = currentSpeaker;
+        const counterpart = speaker === aiOne ? aiTwo : aiOne;
+        const { messageContent } = createMessageElement(speaker, 'Thinking…');
+
+        try {
+          const prompt = buildPrompt(speaker, counterpart);
+          const reply = await callGemini(prompt);
+          renderMessageText(messageContent, reply);
+
+          conversationLog.push({
+            speaker: speaker.name,
+            text: reply,
+            timestamp: new Date().toISOString(),
+            mark: timerDisplay.textContent,
+          });
+          updateConversationCount();
+          turnsCompleted += 1;
+          const hasConversation = conversationLog.length > 0;
+          saveButton.disabled = !hasConversation;
+          resetButton.disabled = !hasConversation;
+
+          generating = false;
+
+          if (!conversationRunning || stopTriggered) {
+            return;
+          }
+
+          if (turnsCompleted >= maxTurns) {
+            finishConversation();
+            return;
+          }
+
+          currentSpeaker = counterpart;
+          pendingTimeout = setTimeout(() => {
+            pendingTimeout = null;
+            executeTurn();
+          }, TURN_DELAY_MS);
+        } catch (error) {
+          renderMessageText(messageContent, 'Unable to generate a response.');
+          appendSystemMessage(`Error: ${error.message}`);
+          generating = false;
+          finishConversation();
+        }
+      }
+
+      function startConversation({ keepHistory = false } = {}) {
+        const apiKey = apiKeyInput.value.trim();
+        if (!apiKey) {
+        alert('Please enter your Gemini API key first.');
+          return;
+        }
+
+        const topic = topicInput.value.trim() || '';
+        const personaOne = aiOnePersonaInput.value.trim() || '';
+        const personaTwo = aiTwoPersonaInput.value.trim() || '';
+
+        const parsedTurns = Number.parseInt(turnsInput.value, 10);
+        maxTurns = Number.isNaN(parsedTurns) ? 10 : Math.min(Math.max(parsedTurns, 2), 20);
+        turnsInput.value = maxTurns.toString();
+
+        const rawTemperature = Number.parseFloat(temperatureInput.value);
+        const temperature = Number.isNaN(rawTemperature) ? 0.8 : Math.min(Math.max(rawTemperature, 0), 2);
+        temperatureInput.value = temperature.toString();
+        temperatureValue.textContent = temperature.toFixed(2);
+
+        const stopMinutes = Number.parseFloat(stopTimeInput.value);
+        const stopAfterMs = Number.isNaN(stopMinutes) || stopMinutes <= 0 ? null : stopMinutes * 60 * 1000;
+        if (stopAfterMs === null) {
+          stopTimeInput.value = '';
+        } else {
+          stopTimeInput.value = stopMinutes.toString();
+        }
+
+        const selectedModel = modelSelect.value || 'gemini-2.0-flash';
+
+        const rawTokens = Number.parseInt(maxTokensInput.value, 10);
+        const maxOutputTokens = Number.isNaN(rawTokens) || rawTokens <= 0 ? null : Math.min(Math.max(rawTokens, 1), 4096);
+        if (maxTokensValue) {
+          maxTokensValue.textContent = maxOutputTokens ? `${maxOutputTokens} tokens` : 'Unlimited';
+        }
+
+        sessionSettings = {
+          apiKey,
+          topic,
+          temperature,
+          stopAfterMs,
+          model: selectedModel,
+          maxTokens: maxOutputTokens,
+          turns: maxTurns,
+          personas: { aiOne: personaOne, aiTwo: personaTwo },
+        };
+
+        lastSessionSettings = {
+          topic,
+          model: selectedModel,
+          temperature,
+          maxTokens: maxOutputTokens,
+          stopAfterMinutes: stopAfterMs ? stopAfterMs / 60000 : null,
+          turnsPerRound: maxTurns,
+          personas: { aiOne: personaOne, aiTwo: personaTwo },
+          participants: { aiOne: aiOne.name, aiTwo: aiTwo.name },
+        };
+
+        aiClient = new GoogleGenAI({ apiKey });
+        aiOne.persona = personaOne;
+        aiTwo.persona = personaTwo;
+
+        stopTriggered = false;
+        finishedConversation = false;
+        if (!keepHistory) {
+          conversationLog = [];
+          resetChatWindow();
+          elapsedMs = 0;
+          updateConversationCount(0);
+        } else {
+          updateConversationCount();
+        }
+
+        setConfigDisabled(true);
+        conversationRunning = true;
+        generating = false;
+        turnsCompleted = 0;
+        currentSpeaker = keepHistory ? determineNextSpeaker() : aiOne;
+
+        startTimer();
+        setStartButtonRunning();
+        const hasConversation = conversationLog.length > 0;
+        saveButton.disabled = !hasConversation;
+        resetButton.disabled = false;
+        executeTurn();
+      }
+
+      function resumeConversation() {
+        if (!sessionSettings) {
+          startConversation({ keepHistory: conversationLog.length > 0 });
+          return;
+        }
+
+        setConfigDisabled(true);
+        conversationRunning = true;
+        finishedConversation = false;
+        setStartButtonRunning();
+        startTimer();
+        if (!generating && !pendingTimeout) {
+          executeTurn();
+        }
+      }
+
+      function pauseConversation() {
+        conversationRunning = false;
+        finishedConversation = false;
+        if (pendingTimeout) {
+          clearTimeout(pendingTimeout);
+          pendingTimeout = null;
+        }
+        stopTimer();
+        setStartButtonPaused();
+        setConfigDisabled(false);
+      }
+
+      function finishConversation() {
+        conversationRunning = false;
+        if (pendingTimeout) {
+          clearTimeout(pendingTimeout);
+          pendingTimeout = null;
+        }
+        stopTimer();
+        setStartButtonPaused();
+        finishedConversation = true;
+        setConfigDisabled(false);
+        sessionSettings = null;
+        aiClient = null;
+      }
+
+      function resetConversation(keepConfig = false, keepHistory = false) {
+        if (pendingTimeout) {
+          clearTimeout(pendingTimeout);
+          pendingTimeout = null;
+        }
+        generating = false;
+        conversationRunning = false;
+        turnsCompleted = 0;
+        stopTriggered = false;
+        if (!keepHistory) {
+          elapsedMs = 0;
+          startTimestamp = null;
+          timerDisplay.textContent = '00:00';
+        }
+        stopTimer();
+
+        if (!keepHistory) {
+          conversationLog = [];
+          currentSpeaker = aiOne;
+          resetChatWindow();
+          updateConversationCount(0);
+          finishedConversation = false;
+          setStartButtonIdle();
+        } else {
+          currentSpeaker = determineNextSpeaker();
+          updateConversationCount();
+          finishedConversation = conversationLog.length > 0;
+          if (finishedConversation) {
+            setStartButtonPaused();
+          } else {
+            setStartButtonIdle();
+          }
+        }
+
+        const hasConversation = conversationLog.length > 0;
+        saveButton.disabled = !hasConversation;
+        resetButton.disabled = !hasConversation;
+
+        if (!keepConfig) {
+          setConfigDisabled(false);
+          sessionSettings = null;
+          aiClient = null;
+        }
+      }
+
+      function toggleConversation() {
+        if (conversationRunning) {
+          pauseConversation();
+          return;
+        }
+
+        if (finishedConversation) {
+          startConversation({ keepHistory: conversationLog.length > 0 });
+          return;
+        }
+
+        if (!conversationLog.length) {
+          startConversation({ keepHistory: false });
+          return;
+        }
+
+        if (!sessionSettings) {
+          startConversation({ keepHistory: false });
+          return;
+        }
+
+        resumeConversation();
+      }
+
+      function getFormSettingsSnapshot() {
+        const stopMinutes = Number.parseFloat(stopTimeInput.value);
+        const stopAfterMinutes = Number.isNaN(stopMinutes) || stopMinutes <= 0 ? null : stopMinutes;
+        const rawTokens = Number.parseInt(maxTokensInput.value, 10);
+        const sanitizedTokens = Number.isNaN(rawTokens) || rawTokens <= 0 ? null : Math.min(Math.max(rawTokens, 1), 4096);
+        const rawTemp = Number.parseFloat(temperatureInput.value);
+        const safeTemp = Number.isNaN(rawTemp) ? 0 : Math.min(Math.max(rawTemp, 0), 2);
+
+        return {
+          topic: topicInput.value.trim(),
+          model: modelSelect.value || 'gemini-2.0-flash',
+          temperature: safeTemp,
+          maxTokens: sanitizedTokens,
+          stopAfterMinutes,
+          turnsPerRound: Number.parseInt(turnsInput.value, 10) || 0,
+          personas: {
+            aiOne: aiOnePersonaInput.value.trim(),
+            aiTwo: aiTwoPersonaInput.value.trim(),
+          },
+          participants: { aiOne: aiOne.name, aiTwo: aiTwo.name },
+        };
+      }
+
+      function saveConversation() {
+        if (!conversationLog.length) return;
+        const settingsSnapshot = lastSessionSettings || getFormSettingsSnapshot();
+        const payload = {
+          metadata: {
+            savedAt: new Date().toISOString(),
+            elapsedMs,
+            timer: timerDisplay.textContent,
+            conversationCount: conversationLog.length,
+          },
+          settings: settingsSnapshot,
+          transcript: conversationLog,
+        };
+        const filename = `ai_duo_chat_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function applySettingsToInputs(settings) {
+        if (!settings || typeof settings !== 'object') {
+          return;
+        }
+
+        if (typeof settings.topic === 'string') {
+          topicInput.value = settings.topic;
+        }
+
+        if (settings.personas && typeof settings.personas === 'object') {
+          if (typeof settings.personas.aiOne === 'string') {
+            aiOnePersonaInput.value = settings.personas.aiOne;
+          }
+          if (typeof settings.personas.aiTwo === 'string') {
+            aiTwoPersonaInput.value = settings.personas.aiTwo;
+          }
+        }
+
+        const turnsValue =
+          typeof settings.turnsPerRound === 'number'
+            ? settings.turnsPerRound
+            : Number.parseInt(settings.turnsPerRound, 10);
+        if (!Number.isNaN(turnsValue)) {
+          const sanitizedTurns = Math.min(Math.max(Math.round(turnsValue), 2), 20);
+          turnsInput.value = sanitizedTurns.toString();
+        }
+
+        const temperatureValueFromSettings =
+          typeof settings.temperature === 'number'
+            ? settings.temperature
+            : Number.parseFloat(settings.temperature);
+        if (!Number.isNaN(temperatureValueFromSettings)) {
+          const clampedTemp = Math.min(Math.max(temperatureValueFromSettings, 0), 2);
+          temperatureInput.value = clampedTemp.toString();
+          temperatureValue.textContent = clampedTemp.toFixed(2);
+        }
+
+        const tokensValue =
+          typeof settings.maxTokens === 'number'
+            ? settings.maxTokens
+            : Number.parseInt(settings.maxTokens, 10);
+        if (!Number.isNaN(tokensValue) && tokensValue > 0) {
+          const sanitizedTokens = Math.min(Math.max(Math.round(tokensValue), 1), 4096);
+          maxTokensInput.value = sanitizedTokens.toString();
+          if (maxTokensValue) {
+            maxTokensValue.textContent = `${sanitizedTokens} tokens`;
+          }
+        } else {
+          maxTokensInput.value = '0';
+          if (maxTokensValue) {
+            maxTokensValue.textContent = 'Unlimited';
+          }
+        }
+
+        const stopMinutesValue =
+          typeof settings.stopAfterMinutes === 'number'
+            ? settings.stopAfterMinutes
+            : Number.parseFloat(settings.stopAfterMinutes);
+        if (!Number.isNaN(stopMinutesValue) && stopMinutesValue > 0) {
+          stopTimeInput.value = stopMinutesValue.toString();
+        } else {
+          stopTimeInput.value = '';
+        }
+
+        if (typeof settings.model === 'string') {
+          const availableValues = Array.from(modelSelect.options || []).map((option) => option.value);
+          modelSelect.value = availableValues.includes(settings.model) ? settings.model : 'gemini-2.0-flash';
+        }
+
+        lastSessionSettings = {
+          topic: topicInput.value.trim(),
+          model: modelSelect.value || 'gemini-2.0-flash',
+          temperature: Number.parseFloat(temperatureInput.value) || 0,
+          maxTokens: (() => {
+            const parsed = Number.parseInt(maxTokensInput.value, 10);
+            return Number.isNaN(parsed) || parsed <= 0
+              ? null
+              : Math.min(Math.max(parsed, 1), 4096);
+          })(),
+          stopAfterMinutes: stopTimeInput.value ? Number.parseFloat(stopTimeInput.value) : null,
+          turnsPerRound: Number.parseInt(turnsInput.value, 10) || 0,
+          personas: {
+            aiOne: aiOnePersonaInput.value.trim(),
+            aiTwo: aiTwoPersonaInput.value.trim(),
+          },
+          participants: { aiOne: aiOne.name, aiTwo: aiTwo.name },
+        };
+
+        updateConversationCount();
+      }
+
+      function handleChatFileSelection(event) {
+        const input = event.target;
+        const file = input.files && input.files[0];
+        if (!file) {
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const raw = reader.result;
+            const parsed = JSON.parse(typeof raw === 'string' ? raw : '');
+
+            let transcript = [];
+            let importedSettings = null;
+            let metadata = null;
+
+            if (Array.isArray(parsed)) {
+              transcript = parsed;
+            } else if (parsed && typeof parsed === 'object') {
+              if (Array.isArray(parsed.transcript)) {
+                transcript = parsed.transcript;
+              } else if (Array.isArray(parsed.history)) {
+                transcript = parsed.history;
+              }
+
+              if (parsed.settings && typeof parsed.settings === 'object') {
+                importedSettings = parsed.settings;
+              }
+
+              if (parsed.metadata && typeof parsed.metadata === 'object') {
+                metadata = parsed.metadata;
+              }
+            } else {
+              throw new Error('The file is not valid JSON.');
+            }
+
+            const sanitized = (Array.isArray(transcript) ? transcript : [])
+              .filter((entry) => entry && typeof entry === 'object')
+              .map((entry) => ({
+                speaker: typeof entry.speaker === 'string' ? entry.speaker : '',
+                text: typeof entry.text === 'string' ? entry.text : '',
+                timestamp: entry.timestamp,
+                mark: entry.mark,
+              }))
+              .filter((entry) => entry.text);
+
+            resetConversation(false, false);
+            conversationLog = sanitized;
+            turnsCompleted = 0;
+            renderConversationHistory(conversationLog);
+
+            const hasContent = conversationLog.length > 0;
+            saveButton.disabled = !hasContent;
+            resetButton.disabled = !hasContent;
+            finishedConversation = hasContent;
+
+            let importedElapsed = metadata && typeof metadata === 'object' ? metadata.elapsedMs : null;
+            if (typeof importedElapsed !== 'number') {
+              importedElapsed = Number(importedElapsed);
+            }
+
+            if (Number.isFinite(importedElapsed) && importedElapsed >= 0) {
+              elapsedMs = importedElapsed;
+              timerDisplay.textContent = formatTime(elapsedMs);
+            } else if (hasContent) {
+              const lastMark = conversationLog[conversationLog.length - 1]?.mark;
+              timerDisplay.textContent = typeof lastMark === 'string' && lastMark ? lastMark : '00:00';
+              elapsedMs = 0;
+            } else {
+              elapsedMs = 0;
+              timerDisplay.textContent = '00:00';
+            }
+
+            if (importedSettings) {
+              applySettingsToInputs(importedSettings);
+            } else {
+              updateConversationCount();
+              lastSessionSettings = getFormSettingsSnapshot();
+            }
+
+            if (hasContent) {
+              appendSystemMessage('Loaded chat history from file.');
+              setStartButtonPaused();
+            } else {
+              setStartButtonIdle();
+            }
+            } catch (error) {
+              alert(`Unable to load file: ${error.message}`);
+          } finally {
+            input.value = '';
+          }
+        };
+        reader.onerror = () => {
+          alert('Unable to read the selected file.');
+          input.value = '';
+        };
+        reader.readAsText(file);
+      }
+
+      function setStartButtonIdle() {
+        startToggle.textContent = 'Start';
+        startToggle.classList.add('primary-btn');
+        startToggle.classList.remove('secondary-btn');
+      }
+
+      function setStartButtonRunning() {
+        startToggle.textContent = 'Pause';
+        startToggle.classList.remove('primary-btn');
+        startToggle.classList.add('secondary-btn');
+      }
+
+      function setStartButtonPaused() {
+        startToggle.textContent = 'Continue';
+        startToggle.classList.add('primary-btn');
+        startToggle.classList.remove('secondary-btn');
+      }
+
+      startToggle.addEventListener('click', toggleConversation);
+      resetButton.addEventListener('click', () => {
+        resetConversation();
+      });
+      loadButton.addEventListener('click', () => {
+        if (conversationRunning) {
+          pauseConversation();
+        }
+        loadChatInput.click();
+      });
+      loadChatInput.addEventListener('change', handleChatFileSelection);
+      saveButton.addEventListener('click', saveConversation);
+
+      temperatureInput.addEventListener('input', () => {
+        temperatureValue.textContent = Number.parseFloat(temperatureInput.value).toFixed(2);
+      });
+
+      if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+          const currentTheme = document.body.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+          const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+          document.body.setAttribute('data-theme', nextTheme);
+          themeToggle.textContent = nextTheme === 'dark' ? 'Switch to Light' : 'Switch to Dark';
+        });
+      }
+
+      if (maxTokensInput && maxTokensValue) {
+        maxTokensInput.addEventListener('input', () => {
+          const parsed = Number.parseInt(maxTokensInput.value, 10);
+          maxTokensValue.textContent = Number.isNaN(parsed) || parsed <= 0 ? 'Unlimited' : `${parsed} tokens`;
+        });
+      }
+
+      window.addEventListener('keydown', (event) => {
+        if (event.code === 'Space' && !event.repeat) {
+          const target = event.target;
+          if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
+            return;
+          }
+          event.preventDefault();
+          toggleConversation();
+        }
+      });
+
+      resetConversation();
+    </script>
+  </body>
+</html>
